@@ -38,17 +38,19 @@ import org.springframework.lang.Nullable;
  *
  * <p>Serves as base class for {@link AbstractBeanFactory}.
  *
+ * 在DefaultSingletonBeanRegistry基础上添加对FactoryBean类型的bean的处理
+ *
  * @author Juergen Hoeller
  * @since 2.5.1
  */
 public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanRegistry {
 
-	/** Cache of singleton objects created by FactoryBeans: FactoryBean name to object. */
+	/** 通过FactoryBeans创建的单例bean的缓存 */
 	private final Map<String, Object> factoryBeanObjectCache = new ConcurrentHashMap<>(16);
 
 
 	/**
-	 * Determine the type for the given FactoryBean.
+	 * 通过给定的factoryBean来确定真实的FactoryBean类型
 	 * @param factoryBean the FactoryBean instance to check
 	 * @return the FactoryBean's object type,
 	 * or {@code null} if the type cannot be determined yet
@@ -73,8 +75,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 	}
 
 	/**
-	 * Obtain an object to expose from the given FactoryBean, if available
-	 * in cached form. Quick check for minimal synchronization.
+	 * 从缓存中获取bean
 	 * @param beanName the name of the bean
 	 * @return the object obtained from the FactoryBean,
 	 * or {@code null} if not available
