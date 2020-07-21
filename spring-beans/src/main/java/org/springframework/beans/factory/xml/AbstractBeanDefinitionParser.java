@@ -60,7 +60,9 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 	@Override
 	@Nullable
 	public final BeanDefinition parse(Element element, ParserContext parserContext) {
+		//首先创建对应的BeanDefinition，实际上就是调用了自定义BeanDefinitionParser中的doParse方法
 		AbstractBeanDefinition definition = parseInternal(element, parserContext);
+
 		if (definition != null && !parserContext.isNested()) {
 			try {
 				String id = resolveId(element, definition, parserContext);
@@ -76,7 +78,9 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 						aliases = StringUtils.trimArrayElements(StringUtils.commaDelimitedListToStringArray(name));
 					}
 				}
+				//将BeanDefinition，beanName，aliases打包成BeanDefinitionHolder
 				BeanDefinitionHolder holder = new BeanDefinitionHolder(definition, id, aliases);
+				//将BeanDefinition注册到BeanDefinitionRegistry中
 				registerBeanDefinition(holder, parserContext.getRegistry());
 				if (shouldFireEvents()) {
 					BeanComponentDefinition componentDefinition = new BeanComponentDefinition(holder);
@@ -90,6 +94,7 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 				return null;
 			}
 		}
+		//最后只需要返回BeanDefinition即可
 		return definition;
 	}
 

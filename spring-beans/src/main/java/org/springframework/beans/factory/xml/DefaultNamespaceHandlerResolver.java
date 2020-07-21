@@ -115,24 +115,30 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	@Override
 	@Nullable
 	public NamespaceHandler resolve(String namespaceUri) {
+		//获取所有已经配置的handler映射，key->"http\://www.lexueba.com/schema/user" ,value-> "test.customtag.MyNamespaceHandler"
 		Map<String, Object> handlerMappings = getHandlerMappings();
 		Object handlerOrClassName = handlerMappings.get(namespaceUri);
 		if (handlerOrClassName == null) {
 			return null;
 		}
+		//是否已经实例化成了对应的NamespaceHandler
 		else if (handlerOrClassName instanceof NamespaceHandler) {
 			return (NamespaceHandler) handlerOrClassName;
 		}
+		//如果没有实例化，缓存中存储的是对应的类路径，初始阶段，缓存中存放的全部是命名空间与类路径的映射（通过读取Spring.handlers文件获取的）
 		else {
 			String className = (String) handlerOrClassName;
 			try {
+				//通过反射生成对应的自定义NamespaceHandler对象
 				Class<?> handlerClass = ClassUtils.forName(className, this.classLoader);
 				if (!NamespaceHandler.class.isAssignableFrom(handlerClass)) {
 					throw new FatalBeanException("Class [" + className + "] for namespace [" + namespaceUri +
 							"] does not implement the [" + NamespaceHandler.class.getName() + "] interface");
 				}
 				NamespaceHandler namespaceHandler = (NamespaceHandler) BeanUtils.instantiateClass(handlerClass);
+				//目的是将自定义的BeanDefinitionParser注册
 				namespaceHandler.init();
+				//将自定义实例化的namespaceHandler缓存起来
 				handlerMappings.put(namespaceUri, namespaceHandler);
 				return namespaceHandler;
 			}
