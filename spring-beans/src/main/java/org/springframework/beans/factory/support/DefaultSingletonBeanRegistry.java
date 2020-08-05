@@ -77,17 +77,17 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * Spring单例对象的初始化其实可以分为三步：
 	 * ① createBeanInstance， 实例化。实际上就是调用对应的构造方法构造对象，此时只是调用了构造方法，spring xml中指定的property并没有进行populate
 	 * ② populateBean，填充属性。这步对spring xml中指定的property进行populate
-	 * ③ initializeBean，调用spring xml中指定的init方法，或者AfterPropertiesSet方法
+	 * ③ initializeBean，初始化 Bean 对象,调用spring xml中指定的init方法，或者AfterPropertiesSet方法
 	 * 发生循环依赖的步骤集中在第一步和第二步。
 	 */
 
-	/** 单例bean的缓存容器（一级缓存，完成了三个阶段的初始化的bean）：beanName -> bean实例 */
+	/** 单例bean的缓存容器（一级缓存，完成了初始化的bean）：beanName -> bean实例 */
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
-	/** 单例bean的缓存容器（三级缓存，完成了第一阶段的初始化的bean）：beanName -> ObjectFactory */
+	/** 单例bean的缓存容器（三级缓存，完成实例化的bean）：beanName -> ObjectFactory */
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
-	/** 单例bean的缓存容器（二级缓存，完成了第一阶段，第二阶段的初始化的bean）：beanName -> bean实例 */
+	/** 单例bean的缓存容器（二级缓存，完成了实例化的bean，但还没有完成初始化，在这期间获取bean会将三级缓存升级到二级缓存）：beanName -> bean实例 */
 	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
 
 	/** 保存已注册的单例 Bean 名称，按照注册顺序排列 */
@@ -195,6 +195,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @param beanName the name of the bean to look for
 	 * @param allowEarlyReference whether early references should be created or not
 	 * @return the registered singleton object, or {@code null} if none found
+	 * 将三级缓存升级到二级缓存
 	 */
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
