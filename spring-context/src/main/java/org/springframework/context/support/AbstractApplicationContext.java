@@ -179,15 +179,19 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
 
 	/** System time in milliseconds when this context started. */
+	//开始启动的时间戳
 	private long startupDate;
 
 	/** Flag that indicates whether this context is currently active. */
+	//容器是否处于激活状态
 	private final AtomicBoolean active = new AtomicBoolean();
 
 	/** Flag that indicates whether this context has been closed already. */
+	//容器是否处于关闭状态
 	private final AtomicBoolean closed = new AtomicBoolean();
 
 	/** Synchronization monitor for the "refresh" and "destroy". */
+	//启动或关闭是的sync同步锁对象，在容器刷新或关闭的时候用，避免两个方法同时执行
 	private final Object startupShutdownMonitor = new Object();
 
 	/** Reference to the JVM shutdown hook, if registered. */
@@ -519,11 +523,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
-			//初始化beanFactory，并进行xml文件读取
+			//初始化beanFactory，并进行xml文件读取（重新创建beanFactory以及读取xml配置到BeanDefitions中，对于已经存在的beanFactory会进行销毁）
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
-			//对beanFactory进行各种功能填充
+			//对beanFactory进行各种功能填充,功能的扩展从这里开始
 			prepareBeanFactory(beanFactory);
 
 			try {
@@ -594,7 +598,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * active flag as well as performing any initialization of property sources.
 	 */
 	protected void prepareRefresh() {
+		//初始化上下文环境，对系统的环境变量或者系统属性进行准备和校验,
+		// 如环境变量中必须设置某个值才能运行，否则不能运行，这个时候可以在这里加这个校验，
+		// 重写 initPropertySources 方法就好了
+
 		// Switch to active.
+		//将状态设置成激活状态，原子操作
 		this.startupDate = System.currentTimeMillis();
 		this.closed.set(false);
 		this.active.set(true);
@@ -609,10 +618,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Initialize any placeholder property sources in the context environment.
+		//初始化context environment（上下文环境）中的占位符属性来源，空方法，由子类实现
 		initPropertySources();
 
 		// Validate that all properties marked as required are resolvable:
 		// see ConfigurablePropertyResolver#setRequiredProperties
+		//对属性进行必要的验证
 		getEnvironment().validateRequiredProperties();
 
 		// Store pre-refresh ApplicationListeners...
@@ -657,7 +668,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
+		//设置BeanFactory的classLoader
 		beanFactory.setBeanClassLoader(getClassLoader());
+		// 设置beanFactory的表达式语言处理器,Spring3开始增加了对语言表达式的支持,默认可以使用#{bean.xxx}的形式来调用相关属性值
 		beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
@@ -1067,6 +1080,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#destroySingletons()
 	 */
 	protected void destroyBeans() {
+		//获取BeanFactory，并从singletonRegistry中的map缓存中移除bean
 		getBeanFactory().destroySingletons();
 	}
 
