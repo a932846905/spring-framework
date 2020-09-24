@@ -98,6 +98,7 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 	/**
 	 * Initialize the root web application context.
 	 */
+	//servlet容器启动的时候，会触发contextInitialized函数，这里就是创建了一个WebApplicationContext，也就是一个sprig容器，具体实现在initWebApplicationContext中
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		initWebApplicationContext(event.getServletContext());
