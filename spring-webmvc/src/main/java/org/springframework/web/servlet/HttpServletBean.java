@@ -79,6 +79,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @see #doPost
  */
 @SuppressWarnings("serial")
+//负责将 ServletConfig 设置到当前 Servlet 对象中，触发点Init方法
 public abstract class HttpServletBean extends HttpServlet implements EnvironmentCapable, EnvironmentAware {
 
 	/** Logger available to subclasses. */
@@ -144,17 +145,23 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	 * @throws ServletException if bean properties are invalid (or required
 	 * properties are missing), or if subclass initialization fails.
 	 */
+	//回调入口
 	@Override
 	public final void init() throws ServletException {
-
 		// Set bean properties from init parameters.
+		//负责将 ServletConfig 设置到当前 Servlet 对象中
+		// <1> 解析 <init-param /> 标签，封装到 PropertyValues pvs 中
 		PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
 		if (!pvs.isEmpty()) {
 			try {
+				// <2.1> 将当前的这个 Servlet 对象，转化成一个 BeanWrapper 对象。从而能够以 Spring 的方式来将 pvs 注入到该 BeanWrapper 对象中
 				BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
 				ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
+				// <2.2> 注册自定义属性编辑器，一旦碰到 Resource 类型的属性，将会使用 ResourceEditor 进行解析
 				bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
+				// <2.3> 空实现，留给子类覆盖
 				initBeanWrapper(bw);
+				// <2.4> 以 Spring 的方式来将 pvs 注入到该 BeanWrapper 对象中
 				bw.setPropertyValues(pvs, true);
 			}
 			catch (BeansException ex) {

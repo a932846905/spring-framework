@@ -61,6 +61,7 @@ public class ContextCleanupListener implements ServletContextListener {
 	 */
 	static void cleanupAttributes(ServletContext servletContext) {
 		Enumeration<String> attrNames = servletContext.getAttributeNames();
+		//执行sprig容器中bean的destroy的回调
 		while (attrNames.hasMoreElements()) {
 			String attrName = attrNames.nextElement();
 			if (attrName.startsWith("org.springframework.")) {

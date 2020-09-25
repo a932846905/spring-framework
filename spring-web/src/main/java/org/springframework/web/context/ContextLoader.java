@@ -533,6 +533,7 @@ public class ContextLoader {
 		servletContext.log("Closing Spring root WebApplicationContext");
 		try {
 			if (this.context instanceof ConfigurableWebApplicationContext) {
+				//AbstractApplicationContext提供的close方法
 				((ConfigurableWebApplicationContext) this.context).close();
 			}
 		}
@@ -544,6 +545,7 @@ public class ContextLoader {
 			else if (ccl != null) {
 				currentContextPerThread.remove(ccl);
 			}
+			//移除spring容器启动标识
 			servletContext.removeAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 		}
 	}
