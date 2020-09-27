@@ -40,11 +40,22 @@ public class HandlerExecutionChain {
 
 	private static final Log logger = LogFactory.getLog(HandlerExecutionChain.class);
 
+	/**
+	 * 处理器
+	 */
 	private final Object handler;
 
+	/**
+	 * 拦截器数组
+	 */
 	@Nullable
 	private HandlerInterceptor[] interceptors;
 
+	/**
+	 * 拦截器数组。
+	 *
+	 * 在实际使用时，会调用 {@link #getInterceptors()} 方法，初始化到 {@link #interceptors} 中
+	 */
 	@Nullable
 	private List<HandlerInterceptor> interceptorList;
 
@@ -102,6 +113,7 @@ public class HandlerExecutionChain {
 			this.interceptorList = new ArrayList<>();
 			if (this.interceptors != null) {
 				// An interceptor array specified through the constructor
+				//初始化的时候将interceptors初始化到interceptorList
 				CollectionUtils.mergeArrayIntoCollection(this.interceptors, this.interceptorList);
 			}
 		}

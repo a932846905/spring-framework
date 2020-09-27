@@ -30,6 +30,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * @since 4.3.1
  * @see HandlerMappingIntrospector
  */
+//MatchableHandlerMapping 接口，定义判断请求和指定 pattern 路径是否匹配的接口方法。
 public interface MatchableHandlerMapping extends HandlerMapping {
 
 	/**
@@ -37,6 +38,9 @@ public interface MatchableHandlerMapping extends HandlerMapping {
 	 * @param request the current request
 	 * @param pattern the pattern to match
 	 * @return the result from request matching, or {@code null} if none
+	 */
+	/**
+	 * 判断请求和指定 `pattern` 路径是否匹配的接口方法
 	 */
 	@Nullable
 	RequestMatchResult match(HttpServletRequest request, String pattern);

@@ -135,6 +135,10 @@ public interface HandlerMapping {
 	 * any interceptors, or {@code null} if no mapping found
 	 * @throws Exception if there is an internal error
 	 */
+	/**
+	 * 获得请求对应的处理器和拦截器们
+	 * 返回的对象类型是 HandlerExecutionChain ，它包含处理器( handler )和拦截器们( HandlerInterceptor 数组 )。
+	 */
 	@Nullable
 	HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;
 

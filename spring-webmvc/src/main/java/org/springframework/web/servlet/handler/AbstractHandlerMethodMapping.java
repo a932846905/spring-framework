@@ -62,6 +62,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * @param <T> the mapping for a {@link HandlerMethod} containing the conditions
  * needed to match the handler method to incoming request.
  */
+//AbstractHandlerMethodMapping 系，基于 Method 进行匹配。例如，我们所熟知的 @RequestMapping 等注解的方式。
 public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMapping implements InitializingBean {
 
 	/**

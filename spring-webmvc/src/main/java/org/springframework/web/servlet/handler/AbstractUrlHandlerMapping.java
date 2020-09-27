@@ -51,6 +51,7 @@ import org.springframework.web.servlet.HandlerExecutionChain;
  * @author Arjen Poutsma
  * @since 16.04.2003
  */
+//AbstractUrlHandlerMapping 系，基于 URL 进行匹配。基于xml配置的方式。
 public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping implements MatchableHandlerMapping {
 
 	@Nullable

@@ -40,6 +40,7 @@ import org.springframework.web.util.WebUtils;
  * @since 28.08.2003
  * @see SpringBeanAutowiringSupport
  */
+//WebApplicationObjectSupport 抽象类，提供 applicationContext和servletContext 属性的声明和注入。
 public abstract class WebApplicationObjectSupport extends ApplicationObjectSupport implements ServletContextAware {
 
 	@Nullable
