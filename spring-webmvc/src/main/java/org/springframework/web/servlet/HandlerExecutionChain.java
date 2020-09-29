@@ -127,9 +127,11 @@ public class HandlerExecutionChain {
 	 */
 	@Nullable
 	public HandlerInterceptor[] getInterceptors() {
+		// 将 interceptorList 初始化到 interceptors 中
 		if (this.interceptors == null && this.interceptorList != null) {
 			this.interceptors = this.interceptorList.toArray(new HandlerInterceptor[0]);
 		}
+		// 返回 interceptors 数组
 		return this.interceptors;
 	}
 
@@ -145,6 +147,7 @@ public class HandlerExecutionChain {
 		if (!ObjectUtils.isEmpty(interceptors)) {
 			for (int i = 0; i < interceptors.length; i++) {
 				HandlerInterceptor interceptor = interceptors[i];
+				//调用当前拦截器的前置处理，如果返回false，触发已完成处理（触发的是当前拦截器之前的拦截器已完成的逻辑，倒着顺序执行）
 				if (!interceptor.preHandle(request, response, this.handler)) {
 					triggerAfterCompletion(request, response, null);
 					return false;

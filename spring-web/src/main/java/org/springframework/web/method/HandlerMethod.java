@@ -64,28 +64,62 @@ public class HandlerMethod {
 	/** Logger that is available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	/**
+	 * Bean 对象，也即handler对象
+	 */
 	private final Object bean;
 
 	@Nullable
 	private final BeanFactory beanFactory;
 
+	/**
+	 * Bean 的类型
+	 */
 	private final Class<?> beanType;
 
+	/**
+	 * 方法
+	 */
 	private final Method method;
 
+	/**
+	 * {@link #method} 的桥接方法
+	 *
+	 * 详细说明
+	 *
+	 * 1. https://www.jianshu.com/p/250030ea9b28
+	 * 2. https://blog.csdn.net/mhmyqn/article/details/47342577
+	 */
 	private final Method bridgedMethod;
 
+	/**
+	 * 方法参数数组
+	 */
 	private final MethodParameter[] parameters;
 
+	/**
+	 * 响应的状态码，即 {@link ResponseStatus#code()}
+	 */
 	@Nullable
 	private HttpStatus responseStatus;
 
+	/**
+	 * 响应的状态码原因，即 {@link ResponseStatus#reason()}
+	 */
 	@Nullable
 	private String responseStatusReason;
 
+	/**
+	 * 解析自哪个 HandlerMethod 对象
+	 *
+	 * 仅构造方法中传入 HandlerMethod 类型的参数适用，例如 {@link #HandlerMethod(HandlerMethod)}
+	 */
 	@Nullable
 	private HandlerMethod resolvedFromHandlerMethod;
 
+	/**
+	 * 父接口的方法的参数注解数组
+	 */
 	@Nullable
 	private volatile List<Annotation[][]> interfaceParameterAnnotations;
 
@@ -130,16 +164,21 @@ public class HandlerMethod {
 		Assert.hasText(beanName, "Bean name is required");
 		Assert.notNull(beanFactory, "BeanFactory is required");
 		Assert.notNull(method, "Method is required");
+		// <1> 将 beanName 赋值给 bean 属性，说明 beanFactory + bean 的方式，获得 handler 对象
 		this.bean = beanName;
 		this.beanFactory = beanFactory;
+		// <2> 初始化 beanType 属性
 		Class<?> beanType = beanFactory.getType(beanName);
 		if (beanType == null) {
 			throw new IllegalStateException("Cannot resolve bean type for bean with name '" + beanName + "'");
 		}
 		this.beanType = ClassUtils.getUserClass(beanType);
+		// <3> 初始化 method、bridgedMethod 属性
 		this.method = method;
 		this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
+		// <4> 初始化 parameters 属性
 		this.parameters = initMethodParameters();
+		// <5> 初始化 responseStatus、responseStatusReason 属性
 		evaluateResponseStatus();
 	}
 
@@ -178,7 +217,9 @@ public class HandlerMethod {
 
 	private MethodParameter[] initMethodParameters() {
 		int count = this.bridgedMethod.getParameterCount();
+		// 创建 MethodParameter 数组
 		MethodParameter[] result = new MethodParameter[count];
+		// 遍历 bridgedMethod 的参数，逐个解析参数类型
 		for (int i = 0; i < count; i++) {
 			HandlerMethodParameter parameter = new HandlerMethodParameter(i);
 			GenericTypeResolver.resolveParameterType(parameter, this.beanType);

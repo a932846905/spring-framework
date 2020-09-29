@@ -44,12 +44,25 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public final class MappedInterceptor implements HandlerInterceptor {
 
+	/*
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/interceptor/**" />
+			<mvc:exclude-mapping path="/interceptor/b/*" />
+			<bean class="com.elim.learn.spring.mvc.interceptor.MyInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+	*/
+
+	//对应上面的<mvc:mapping path="/interceptor/**" />
 	@Nullable
 	private final String[] includePatterns;
 
+	//对应上面的<mvc:exclude-mapping path="/interceptor/b/*" />
 	@Nullable
 	private final String[] excludePatterns;
 
+	//对应上面的<bean class="com.elim.learn.spring.mvc.interceptor.MyInterceptor" />
 	private final HandlerInterceptor interceptor;
 
 	@Nullable
@@ -143,10 +156,12 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 * @param pathMatcher a path matcher for path pattern matching
 	 * @return {@code true} if the interceptor applies to the given request path
 	 */
+	//通过包含的正则和排除的正则来做匹配，来确定传入的路径是否符合匹配规则
 	public boolean matches(String lookupPath, PathMatcher pathMatcher) {
 		PathMatcher pathMatcherToUse = (this.pathMatcher != null ? this.pathMatcher : pathMatcher);
 		if (!ObjectUtils.isEmpty(this.excludePatterns)) {
 			for (String pattern : this.excludePatterns) {
+				//如果被排除的正常命中，则直接返回false
 				if (pathMatcherToUse.match(pattern, lookupPath)) {
 					return false;
 				}

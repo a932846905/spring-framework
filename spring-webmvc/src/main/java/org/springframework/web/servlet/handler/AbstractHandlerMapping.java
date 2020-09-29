@@ -348,6 +348,17 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	protected void detectMappedInterceptors(List<HandlerInterceptor> mappedInterceptors) {
 		// 扫描已注册的 MappedInterceptor 的 Bean 们，添加到 mappedInterceptors 中
 		// MappedInterceptor 会根据请求路径做匹配，是否进行拦截。
+		// MappedInterceptor的bean对应的就是如下的配置
+		/*
+		<mvc:interceptors>
+			<mvc:interceptor>
+				<mvc:mapping path="/interceptor/**" />
+				<mvc:exclude-mapping path="/interceptor/b/*" />
+				<bean class="com.elim.learn.spring.mvc.interceptor.MyInterceptor" />
+			</mvc:interceptor>
+		</mvc:interceptors>
+		 */
+		//基于这样的思路，我们直接配置 MappedInterceptor 的 Bean 对象也是可以的，无论是通过 XML ，还是通过 @Bean 注解。
 		mappedInterceptors.addAll(
 				BeanFactoryUtils.beansOfTypeIncludingAncestors(
 						obtainApplicationContext(), MappedInterceptor.class, true, false).values());
